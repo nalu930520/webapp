@@ -1,0 +1,43 @@
+version: 0.0
+os: linux
+files:
+  - source: /dist
+    destination: /data/mobi-webapp/dist
+  - source: /ansible
+    destination: /data/mobi-webapp/ansible
+  - source: /appspec.yml
+    destination: /data/mobi-webapp/
+permissions:
+  - object: /data
+    pattern: "mobi-webapprcleci"
+    owner: nginx
+    group: root
+    mode: 554
+    type:
+      - directory
+  - object: /data/mobi-webapp
+    pattern: "dist"
+    owner: nginx
+    group: root
+    mode: 554
+    type:
+      - directory
+  - object: /data/mobi-webapp/dist
+    pattern: "**"
+    owner: nginx
+    group: root
+    mode: 664
+    type:
+      - file
+  - object: /data/mobi-webapp/ansible/scripts
+    pattern: "**"
+    owner: nginx
+    group: root
+    mode: 755
+    type:
+      - file
+hooks:
+   AfterInstall:
+       - location: ansible/scripts/after_install.sh 
+         timeout: 3600
+   

@@ -1,0 +1,39 @@
+version: 0.0
+os: linux
+files:
+  - source: /dist
+    destination: /jenkinsci/mobi-webapp/dist
+  - source: /ansible
+    destination: /jenkinsci/mobi-webapp/ansible
+  - source: /appspec.mobi-webapp.yml
+    destination: /jenkinsci/mobi-webapp/
+permissions:
+  - object: /jenkinsci
+    pattern: "mobi-webapp"
+    owner: nginx
+    group: root
+    mode: 554
+    type:
+      - directory
+  - object: /jenkinci/mobi-webapp
+    pattern: "dist"
+    owner: nginx
+    group: root
+    mode: 554
+    type:
+      - directory
+  - object: /jenkinsci/mobi-webapp/dist
+    pattern: "**"
+    owner: nginx
+    group: root
+    mode: 664
+    type:
+      - file
+  - object: /jenkinsci/mobi-webapp/ansible/scripts
+    pattern: "**"
+    owner: nginx
+    group: root
+    mode: 755
+    type:
+      - file
+

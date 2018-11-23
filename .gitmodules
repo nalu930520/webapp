@@ -1,0 +1,4 @@
+[submodule "btcc-mobi-page-localization"]
+	path = btcc-mobi-page-localization
+	url = git@github.com:mobiwallet/btcc-mobi-page-localization.git
+        branch = master

@@ -1,0 +1,226 @@
+version: 2
+jobs:
+  build:
+    docker: 
+      - image: circleci/node:9.6-browsers
+    working_directory: ~/mobi-webapp
+    steps:
+      - checkout
+      - run:
+          name: git submodule init
+          command: |
+            git submodule init
+            git submodule update
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths: 
+            - ~/mobi-webapp
+      - run:
+          name: update-npm
+          command: "sudo npm install -g npm@latest"
+
+
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package.json" }}  
+      - run:
+          name: install-npm-tree
+          command: npm install
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "package.json" }}
+          paths: 
+            - .node_modules
+
+      - run:
+          name: npm build 
+          command: |
+            if [ $CIRCLE_BRANCH = 'develop' ];then
+                npm run build:staging
+            fi
+            if [ $CIRCLE_BRANCH = 'master' ];then
+                npm run build:preproduction
+            fi
+            if [ $CIRCLE_BRANCH = 'release' ];then
+                npm run build:production
+            fi
+      - save_cache:
+          key: build-results-cache-{{ .Environment.CIRCLE_SHA1 }}
+          paths: 
+            - dist
+
+  test:
+    docker:
+      - image: circleci/node:9.6-browsers
+    steps:
+      - run:
+          name: test
+          command: echo "Test"
+    
+
+  deploy-develop:
+    docker:
+      - image: circleci/node:9.6-browsers
+    working_directory: ~/mobi-webapp
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: build-results-cache-{{ .Environment.CIRCLE_SHA1 }}
+
+      - run:
+          name: install awscli
+          command: |
+            sudo apt-get install -y python-pip libpython-dev
+            sudo pip install awscli
+      - run: 
+          name: create-deployment
+          command:  |
+              export AWS_ACCESS_KEY_ID=${STAGING_AWS_ACCESS_KEY_ID}
+              export AWS_SECRET_ACCESS_KEY=${STAGING_AWS_SECRET_ACCESS_KEY}
+              export AWS_DEFAULT_REGION=${STAGING_AWS_DEFAULT_REGION}  # cn-north-1
+              export AWS_BUCKET_NAME=${STAGING_AWS_BUCKET_NAME}  # circleci-codedeploy
+              export AWS_CODEDEPLOY_APPLICATION=${STAGING_AWS_CODEDEPLOY_APPLICATION}
+              export AWS_DEPLOYMENT_GROUP=${STAGING_AWS_DEPLOYMENT_GROUP}
+              export AWS_DEPLOYMENT_CONFIG=${STAGING_AWS_DEPLOYMENT_CONFIG}  # CodeDeployDefault.OneAtATime
+              export AWS_FILE_EXISTS_BEHAVIOR=${STAGING_AWS_FILE_EXISTS_BEHAVIOR}  # DISALLOW,OVERWRITE,RETAIN
+              export AWS_ROLLBACK_CONFIG=${STAGING_AWS_ROLLBACK_CONFIG}  # enabled=true,events=DEPLOYMENT_FAILURE
+
+              RES=`aws deploy push \
+                --application-name ${AWS_CODEDEPLOY_APPLICATION} \
+                --description "This is a revision for the project ${CIRCLE_PROJECT_REPONAME}" \
+                --ignore-hidden-files \
+                --s3-location s3://${AWS_BUCKET_NAME}/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1:0-10}.zip \
+                --source .`
+              eTag=`echo ${RES} | awk -F 'eTag=' '{print $2}' | awk -F ' ' '{print $1}'`
+              aws deploy create-deployment \
+                --application-name ${AWS_CODEDEPLOY_APPLICATION} \
+                --s3-location bucket=${AWS_BUCKET_NAME},key=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1:0-10}.zip,bundleType=zip \
+                --deployment-group-name ${AWS_DEPLOYMENT_GROUP} \
+                --deployment-config-name ${AWS_DEPLOYMENT_CONFIG} \
+                --file-exists-behavior ${AWS_FILE_EXISTS_BEHAVIOR} \
+                --auto-rollback-configuration ${AWS_ROLLBACK_CONFIG}
+
+  deploy-master:
+    docker:
+      - image: circleci/node:9.6-browsers
+    working_directory: ~/mobi-webapp
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: build-results-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: install awscli
+          command: |
+            sudo apt-get install -y python-pip libpython-dev
+            sudo pip install awscli
+
+      - run: 
+          name: create-deployment
+          command:  |
+              export AWS_ACCESS_KEY_ID=${PROD_AWS_ACCESS_KEY_ID}
+              export AWS_SECRET_ACCESS_KEY=${PROD_AWS_SECRET_ACCESS_KEY}
+              export AWS_DEFAULT_REGION=${PROD_AWS_DEFAULT_REGION}
+              export AWS_BUCKET_NAME=${PROD_AWS_BUCKET_NAME}
+              export AWS_CODEDEPLOY_APPLICATION=${PROD_AWS_CODEDEPLOY_APPLICATION}
+              export AWS_DEPLOYMENT_GROUP=${PROD_AWS_DEPLOYMENT_GROUP}
+              export AWS_DEPLOYMENT_CONFIG=${PROD_AWS_DEPLOYMENT_CONFIG}
+              export AWS_FILE_EXISTS_BEHAVIOR=${PROD_AWS_FILE_EXISTS_BEHAVIOR}
+              export AWS_ROLLBACK_CONFIG=${PROD_AWS_ROLLBACK_CONFIG}
+
+              RES=`aws deploy push \
+                --application-name ${AWS_CODEDEPLOY_APPLICATION} \
+                --description "This is a revision for the project ${CIRCLE_PROJECT_REPONAME}" \
+                --ignore-hidden-files \
+                --s3-location s3://${AWS_BUCKET_NAME}/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1:0-10}.zip \
+                --source .`
+              eTag=`echo ${RES} | awk -F 'eTag=' '{print $2}' | awk -F ' ' '{print $1}'`
+              aws deploy create-deployment \
+                --application-name ${AWS_CODEDEPLOY_APPLICATION} \
+                --s3-location bucket=${AWS_BUCKET_NAME},key=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1:0-10}.zip,bundleType=zip \
+                --deployment-group-name ${AWS_DEPLOYMENT_GROUP} \
+                --deployment-config-name ${AWS_DEPLOYMENT_CONFIG} \
+                --file-exists-behavior ${AWS_FILE_EXISTS_BEHAVIOR} \
+                --auto-rollback-configuration ${AWS_ROLLBACK_CONFIG}
+
+  deploy-release:
+    docker:
+      - image: circleci/node:9.6-browsers
+    working_directory: ~/mobi-webapp
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: build-results-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: install awscli
+          command: |
+            sudo apt-get install -y python-pip libpython-dev
+            sudo pip install awscli
+
+      - run: 
+          name: create-deployment
+          command:  |
+              export AWS_ACCESS_KEY_ID=${RELEASE_AWS_ACCESS_KEY_ID}
+              export AWS_SECRET_ACCESS_KEY=${RELEASE_AWS_SECRET_ACCESS_KEY}
+              export AWS_DEFAULT_REGION=${RELEASE_AWS_DEFAULT_REGION}
+              export AWS_BUCKET_NAME=${RELEASE_AWS_BUCKET_NAME}
+              export AWS_CODEDEPLOY_APPLICATION=${RELEASE_AWS_CODEDEPLOY_APPLICATION}
+              export AWS_DEPLOYMENT_GROUP=${RELEASE_AWS_DEPLOYMENT_GROUP}
+              export AWS_DEPLOYMENT_CONFIG=${RELEASE_AWS_DEPLOYMENT_CONFIG}
+              export AWS_FILE_EXISTS_BEHAVIOR=${RELEASE_AWS_FILE_EXISTS_BEHAVIOR}
+              export AWS_ROLLBACK_CONFIG=${RELEASE_AWS_ROLLBACK_CONFIG}
+
+              RES=`aws deploy push \
+                --application-name ${AWS_CODEDEPLOY_APPLICATION} \
+                --description "This is a revision for the project ${CIRCLE_PROJECT_REPONAME}" \
+                --ignore-hidden-files \
+                --s3-location s3://${AWS_BUCKET_NAME}/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1:0-10}.zip \
+                --source .`
+              eTag=`echo ${RES} | awk -F 'eTag=' '{print $2}' | awk -F ' ' '{print $1}'`
+              aws deploy create-deployment \
+                --application-name ${AWS_CODEDEPLOY_APPLICATION} \
+                --s3-location bucket=${AWS_BUCKET_NAME},key=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1:0-10}.zip,bundleType=zip \
+                --deployment-group-name ${AWS_DEPLOYMENT_GROUP} \
+                --deployment-config-name ${AWS_DEPLOYMENT_CONFIG} \
+                --file-exists-behavior ${AWS_FILE_EXISTS_BEHAVIOR} \
+                --auto-rollback-configuration ${AWS_ROLLBACK_CONFIG}
+
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy-develop:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - develop
+      - hold-master:
+          type: approval
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-master:
+          requires:
+            - hold-master
+      - hold-release:
+          type: approval
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - release
+      - deploy-release:
+          requires:
+            - hold-release
+

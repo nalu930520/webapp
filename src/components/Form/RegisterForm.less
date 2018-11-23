@@ -1,0 +1,210 @@
+/* 修正样式 */
+:global .ant-select-selection-selected-value {
+    width: 100%;
+    padding: 3px 24px 3px 8px;
+    height: 30px;
+    line-height: 24px;
+}
+.optionImg {
+  width: 24px;
+  height:24px;
+  border-radius: 50%;
+  margin-right: 6px;
+  float: left;
+}
+.phoneNumberWrap {
+  :global .ant-input-group-addon {
+    background-color: #fff;
+  }
+  :global .ant-select-selection__rendered {
+    text-align: left;
+  }
+  :global .ant-select-selection-selected-value {
+    display: flex !important;
+    .country-name {
+      display: none;
+    }
+  }
+}
+:global .ant-select-dropdown{
+  min-width: 15rem!important;
+}
+:global .country-name {
+  float: left;
+}
+:global .country-code {
+  float: right;
+  min-width: 50px;
+}
+.registerContent{
+  background: none;
+  text-align: center;
+  padding: 20px;
+  margin: 0 auto;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  &>div{
+    border-radius: 4px;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  .formActive{
+    .captchaBtn{
+      border-bottom: 2px solid #214ea2!important;
+    }
+    :global{
+      .ant-input, .ant-input-group-addon{
+        border-bottom: 2px solid #214ea2;
+      }
+    }
+  }
+  :global{
+    .ant-form{
+      padding: 4rem;
+      position: relative;
+      z-index: 1000;
+      @media screen and (max-width: 768px) {
+        padding: 5rem 2rem;
+      }
+    }
+    .ant-input, .ant-input-group-addon{
+      border: none;
+      border-bottom: 1px solid #d8dde9;
+      border-radius: 0;
+    }
+    .acitve {
+      .ant-input, .ant-input-group-addon{
+        border-bottom: 2px solid #214ea2;
+      }
+    }
+  }
+  .registerText{
+    font-size: 14px;
+    display: block;
+    text-align: center;
+    color: #333333;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    background-color: #f2f2f2;
+    line-height: 50px;
+    height: 50px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    a{
+      color: #214ea2;
+    }
+  }
+  .captchaBtn{
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #d8dde9;
+    color:#214ea2;
+    &[disabled]{
+      background: none;
+    }
+  }
+
+}
+.registerSuccessBox{
+  position: relative;
+  &::before{
+    content: "";
+    display: block;
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 800px;
+    background-size: cover;
+    transform: translate(-25%, -25%) scale(0.5);
+    @media screen and (max-width: 768px) {
+      transform: translate(-35%, -35%) scale(0.3);
+    }
+    background: url('../../../public/register_picture_left.png') left top no-repeat;
+  }
+  &::after{
+    content: "";
+    display: block;
+    position: absolute;
+    top:0;
+    right: 0;
+    width: 100%;
+    height: 800px;
+    transform: translate(25%, -25%) scale(0.5);
+    @media screen and (max-width: 768px) {
+      transform: translate(35%, -35%) scale(0.3);
+    }
+    background: url('../../../public/register_picture_right.png') right top no-repeat;
+  }
+  .registerHeader{
+    text-align: center!important;
+    color: #0FAD67;
+  }
+}
+.registerContent {
+  max-width: 500px;
+  box-sizing: border-box;
+  .qrcodeWraper{
+    padding: 1.5rem;
+    position: relative;
+    z-index: 1000;
+    box-sizing: content-box;
+  }
+  :global {
+    h1{
+      font-weight: normal;
+    }
+    .ant-form-explain{
+      text-align: left;
+    }
+    .ant-btn-primary{
+      border: none;
+      border-radius: 25px;
+      background-color: #214ea2;
+      &[disabled]{
+        background-color: #ddd;
+      }
+    }
+    .ant-input-lg, .ant-btn-lg {
+       height: 50px;
+       width: 100%;
+       font-weight: normal;
+    }
+    .ant-input{
+      &:focus,&:hover{
+        box-shadow: none;
+      }
+    }
+    .has-success.has-feedback:after, .has-warning.has-feedback:after, .has-error.has-feedback:after, .is-validating.has-feedback:after{
+      width: 40px;
+      height: 38px;
+      line-height: 38px;
+    }
+    input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill{
+      background-color: #fff!important;
+    }
+  }
+  .registerHeader {
+    text-align: left;
+    margin-bottom: 10px;
+    font-weight: normal;
+  }
+  .forgot{
+    float: right;
+  }
+  .loginButton{
+    width: 100%;
+    height: 50px;
+    display: inline-block;
+  }
+}

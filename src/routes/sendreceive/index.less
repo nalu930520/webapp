@@ -1,0 +1,221 @@
+.sendAndReveive {
+
+}
+.tabContent {
+    padding: 27px 30px;
+    padding-top: 11px;
+}
+.adressInput {
+    height: 40px;
+    width:365px;
+    padding-left: 10px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    color:#333;
+    font-size:14px;
+    border:1px solid #d6dcdf;
+    border-radius:4px 0 0 4px;
+}
+:global .adressButton {
+      padding:11px 32px;
+      background: #2c8de8;
+      border: 1px solid #2c8de8;
+      border-radius: 0 4px 4px 0;
+      position: relative;
+      left:-2px;
+      color:#fff;
+      cursor:pointer;
+}
+.qrAdress {
+  margin-top: 14px;
+  margin-bottom: 24px;
+}
+.problemIcon {
+  width: 16px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+:global .ant-tabs-nav .ant-tabs-tab {
+  font-size: 16px;
+  padding: 16px 20px;
+}
+:global .ant-tabs-tabpane {
+  min-height: 700px;
+}
+:global .countyOption {
+  width: 300px !important;
+}
+.optionImg {
+  width: 24px;
+  height:24px;
+  border-radius: 50%;
+  margin-right: 6px;
+  float: left;
+}
+:global .ant-radio-button-wrapper {
+  margin-bottom: 33px;
+  width: auto !important;
+  margin-right: 33px !important;
+  height: auto;
+  padding: 0;
+  border-left: 1px solid #d9d9d9;
+  border-radius: 0 !important;
+  &:hover {
+    background: rgba(44, 141, 232, 0.05);
+    color: #333;
+  }
+}
+:global .ant-radio-button-wrapper-checked {
+    &:after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: url('../../../public/selectArrow.png');
+    background-size: 100%;
+  }
+  &:hover {
+    border-color: #108ee9 !important;
+    box-shadow: none;
+  }
+  &:active {
+    border-color: #108ee9 !important;
+    box-shadow: none;
+  }
+}
+.stepTitle {
+  font-size: 16px;
+  margin-bottom: 24px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+}
+:global .ant-form-item-label {
+  text-align: left;
+}
+
+.contactWraper {
+  padding: 12px 20px;
+  padding-right: 0;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-wrap: wrap;
+  height: 217px;
+  overflow: hidden;
+  :global .ant-radio-button-wrapper {
+    border-color: #f4f4f4;
+  }
+  :global .ant-radio-button-wrapper-checked {
+    border-color: #108ee9;
+    box-shadow: none;
+  }
+  :global .ant-radio-group {
+    padding-top: 10px;
+    height: 100%; /* 处理，Safari对overflow的处理，表现不一致 */
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  :global .ant-radio-button-wrapper:not(:first-child)::before {
+    background-color: #f4f4f4;
+  }
+}
+.currencyTitle {
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #ccc;
+  font-weight: 600;
+}
+.myWallet {
+  float: right;
+  line-height: 24px;
+}
+.currencyCodeSpan, .walletCodeSpan {
+  display: inline-block;
+  min-width: 30px;
+}
+
+.currencyCodeSpan {
+  margin-right: 2px;
+}
+
+.walletCodeSpan {
+  margin-left: 8px;
+}
+
+/* 修正样式 */
+:global .ant-select-selection-selected-value {
+    width: 100%;
+    padding: 3px 24px 3px 8px;
+    height: 30px;
+    line-height: 24px;
+}
+
+.phoneNumberWrap {
+  :global .ant-input-group-addon {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+  }
+  :global .ant-select {
+    height: 32px;
+    width: 100%;
+    border: 1px solid #d9d9d9;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+  :global .ant-select-selection__rendered {
+    text-align: left;
+  }
+  :global .ant-select-selection-selected-value {
+    .country-name {
+      display: none;
+    }
+  }
+  :global .ant-select-dropdown-menu-item {
+    display: flex;
+  }
+  :global .country-name {
+    float: left;
+  }
+  :global #countryCode {
+    width: 50px;
+    height: 32px;
+  }
+  :global .country-code {
+    float: none;
+    min-width: auto;
+  }
+}
+
+:global .country-code {
+  float: right;
+  min-width: 50px;
+}
+hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.titleName {
+  font-size: 18px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.qrcodeWraper {
+  margin-top: 14px;
+  margin-bottom: 24px;
+}
+
+:global .has-success.has-feedback:after {
+  content: '';
+}
+.crptocurrencyWraper {
+  padding: 8px;
+  min-width: 80px;
+  text-align: center;
+}
